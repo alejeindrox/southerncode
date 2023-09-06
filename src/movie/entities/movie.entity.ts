@@ -39,7 +39,7 @@ export class Movie {
   @Exclude()
   @CreateDateColumn({
     name: 'create_at',
-    type: 'timestamptz',
+    type: process.env.NODE_ENV === 'test' ? 'datetime' : 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createAt: Date;
@@ -47,7 +47,7 @@ export class Movie {
   @Exclude()
   @UpdateDateColumn({
     name: 'update_at',
-    type: 'timestamptz',
+    type: process.env.NODE_ENV === 'test' ? 'datetime' : 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateAt: Date;

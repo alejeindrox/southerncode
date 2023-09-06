@@ -29,7 +29,7 @@ export class Review {
   @Exclude()
   @CreateDateColumn({
     name: 'create_at',
-    type: 'timestamptz',
+    type: process.env.NODE_ENV === 'test' ? 'datetime' : 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createAt: Date;
@@ -37,7 +37,7 @@ export class Review {
   @Exclude()
   @UpdateDateColumn({
     name: 'update_at',
-    type: 'timestamptz',
+    type: process.env.NODE_ENV === 'test' ? 'datetime' : 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateAt: Date;
