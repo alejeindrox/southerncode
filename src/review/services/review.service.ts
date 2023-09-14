@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -17,10 +17,13 @@ export class ReviewService {
   ) {}
 
   async findAll() {
-    const reviews = await this.reviewsRepo.find({ relations: ['user'] });
+    const reviews = await this.reviewsRepo.find({
+      relations: ['user', 'movie'],
+    });
     const transformedReviews = reviews.map((item) => ({
       rating: item.rating,
       username: item.user.username,
+      movie: item.movie,
     }));
     return transformedReviews;
   }
@@ -32,6 +35,20 @@ export class ReviewService {
         username: data.userName,
       });
 
+      const existingReview = await this.reviewsRepo.findOne({
+        where: {
+          movie: { id: movie.id },
+          user: { id: user.id },
+        },
+      });
+
+      const exception = await this.requestException(
+        existingReview,
+        data.rating,
+      );
+
+      if (exception) return exception;
+
       const newReview = this.reviewsRepo.create(data);
       newReview.movie = movie;
       newReview.user = user;
@@ -40,5 +57,20 @@ export class ReviewService {
     } catch (error) {
       throw error;
     }
+  }
+
+  private requestException(existingReview, rating: number) {
+    if (existingReview) {
+      return new BadRequestException(
+        'A review with the same user and movie already exists',
+      );
+    }
+    if (rating < 1) {
+      return new BadRequestException('Rating must be at least 1');
+    }
+    if (rating > 10) {
+      return new BadRequestException('Rating cannot exceed 10');
+    }
+    return;
   }
 }

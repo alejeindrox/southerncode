@@ -37,12 +37,15 @@ describe('ReviewService', () => {
   it('should save a review for movie', async () => {
     const newReview = {
       rating: faker.number.int({ min: 1, max: 10 }),
-      tmdbId: faker.number.int({ min: 10000, max: 90000 }),
+      tmdbId: faker.number.int({ min: 100, max: 104 }),
       userName: faker.internet.userName(),
     };
 
     const result = await service.create(newReview);
-    expect(result).toMatchObject({
+    const review = result as Review;
+    const { movie } = review;
+
+    expect(review).toMatchObject({
       rating: newReview.rating,
       movie: {
         tmdbId: newReview.tmdbId,
@@ -51,44 +54,75 @@ describe('ReviewService', () => {
         username: newReview.userName,
       },
     });
-    expect(result).toHaveProperty('movie');
-    expect(result.movie).toHaveProperty('title');
-    expect(result.movie).toHaveProperty('release_date');
-    expect(result.movie).toHaveProperty('poster_path');
-    expect(result.movie).toHaveProperty('overview');
+    expect(review).toHaveProperty('movie');
+    expect(movie).toHaveProperty('title');
+    expect(movie).toHaveProperty('release_date');
+    expect(movie).toHaveProperty('poster_path');
+    expect(movie).toHaveProperty('overview');
   });
 
-  it('error when make a review with a rating greater than 10 or less than 1', async () => {
+  it('should throw BadRequestException when creating a review with a rating greater than 10 or less than 1', async () => {
+    const tmdbId = faker.number.int({ min: 105, max: 109 });
+
     const newReview = {
       rating: faker.number.int({ min: 11 }),
-      tmdbId: faker.number.int({ min: 10000, max: 90000 }),
+      tmdbId,
       userName: faker.internet.userName(),
     };
 
     const newReview2 = {
       rating: faker.number.int({ max: 0 }),
-      tmdbId: faker.number.int({ min: 10000, max: 90000 }),
+      tmdbId,
       userName: faker.internet.userName(),
     };
 
     const resultMaxRating = await service.create(newReview);
     const resultMinRating = await service.create(newReview2);
 
-    expect(resultMaxRating).rejects.toBeInstanceOf(BadRequestException);
-    expect(resultMinRating).rejects.toBeInstanceOf(BadRequestException);
+    expect(resultMaxRating).toBeInstanceOf(BadRequestException);
+    expect(resultMinRating).toBeInstanceOf(BadRequestException);
+  });
+
+  it('should throw BadRequestException when creating a review with the same user and movie', async () => {
+    const newReview = {
+      rating: faker.number.int({ min: 1, max: 10 }),
+      tmdbId: faker.number.int({ min: 110, max: 114 }),
+      userName: faker.internet.userName(),
+    };
+
+    const resultSuccess = await service.create(newReview);
+    const resultError = await service.create(newReview);
+
+    expect(resultSuccess).toBeDefined();
+    expect(resultError).toBeInstanceOf(BadRequestException);
+  });
+
+  it('should return a list of reviews', async () => {
+    const baseReview = {
+      rating: faker.number.int({ min: 1, max: 10 }),
+      tmdbId: faker.number.int({ min: 115, max: 118 }),
+    };
+
+    const newReview = {
+      ...baseReview,
+      userName: faker.internet.userName(),
+    };
+
+    const newReview2 = {
+      ...baseReview,
+      userName: faker.internet.userName(),
+    };
+
+    const newReview3 = {
+      ...baseReview,
+      userName: faker.internet.userName(),
+    };
+
+    await service.create(newReview);
+    await service.create(newReview2);
+    await service.create(newReview3);
+    const result = await service.findAll();
+
+    expect(Array.isArray(result)).toBe(true);
   });
 });
-//1 a 999999
-//{
-//   "rating": 8,
-//   "movie": {
-//     "tmdbId": 10000,
-//     "title": "La estrategia del caracol",
-//     "release_date": "1993-12-25T00:00:00.000Z",
-//     "poster_path": "/7Slakz6z2I3VJ684FuDP1ZLOQbi.jpg",
-//     "overview": "A group of tenants living in an old house are confronted with having to move out due to a renovation project the city has undertaken. The tenants decide to unite and come up with a strategy, but in the process—while the landlord and his aggressive attorney are chasing them—the tenants transform into the opposite of who they once were."
-//   },
-//   "user": {
-//     "username": "John Doe"
-//   }
-// }

@@ -22,8 +22,8 @@ export class Review {
 
   @Column({ type: 'integer', nullable: false })
   @IsInt()
-  @Min(1, { message: 'Rating cannot be less than 1' })
-  @Max(10, { message: 'Rating cannot be higher than 10' })
+  @Min(1, { message: 'Rating must be at least 1' })
+  @Max(10, { message: 'Rating cannot exceed 10' })
   rating: number;
 
   @Exclude()

@@ -11,8 +11,8 @@ import {
 
 export class CreateReviewDto {
   @IsInt()
-  @Min(1)
-  @Max(10)
+  @Min(1, { message: 'Rating must be at least 1' })
+  @Max(10, { message: 'Rating cannot exceed 10' })
   @IsNotEmpty()
   @ApiProperty({
     example: 8,
