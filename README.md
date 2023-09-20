@@ -1,4 +1,11 @@
-# Southerncode Challenge API in NestJS 8
+# Southerncode Challenge API in NestJS 10
+![License](https://img.shields.io/badge/License-MIT-8fbe1a?labelColor=5c5c5d&style=flat)
+![Node](https://img.shields.io/badge/Node-%3E=%20v18.0.0-2282c3?labelColor=5c5c5d&style=flat)
+![pnpm](https://img.shields.io/badge/pnpm-%3E=%20v7.8.0-50c62a?labelColor=5c5c5d&style=flat)
+![coverage](https://img.shields.io/badge/coverage-85%25-50c62a?labelColor=5c5c5d&style=flat)
+![docker](https://img.shields.io/badge/docker-%3E=%20v20-f84d62?labelColor=5c5c5d&style=flat)
+![author](https://img.shields.io/badge/author-@alejeindrox-49b382?labelColor=5c5c5d&style=flat)
+
 
 ## 1. Getting started
 
